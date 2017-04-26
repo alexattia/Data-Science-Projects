@@ -28,7 +28,7 @@ PER_EPOCH = 256
 
 def fbeta(y_true, y_pred, threshold_shift=0):
   """
-  Submissions is evaluated based on the F-beta score, it measures acccuracy using precision
+  Submissions are evaluated based on the F-beta score, it measures acccuracy using precision
   and recall. Beta = 2 here.
   """
   beta = 2
