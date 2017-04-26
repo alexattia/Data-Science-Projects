@@ -20,9 +20,9 @@ from sklearn.model_selection import train_test_split
 import cv2
 from tqdm import tqdm
 
-picture_size = 64
+picture_size = 128
 INPUT_SHAPE = (picture_size, picture_size, 4)
-EPOCHS = 6
+EPOCHS = 20
 BATCH = 64
 PER_EPOCH = 256
 
@@ -89,13 +89,16 @@ def create_model():
     model.add(Conv2D(96, (5, 5), strides=(2, 2), activation='elu'))
     model.add(BatchNormalization())
 
-    model.add(Conv2D(96, (3, 3), activation='elu'))
+    model.add(Conv2D(128, (3, 3), activation='elu'))
+    model.add(BatchNormalization())
+
+    model.add(Conv2D(128, (2, 2), activation='elu'))
     model.add(BatchNormalization())
 
     model.add(Flatten())
     model.add(Dropout(0.3))
 
-    model.add(Dense(256, activation='elu'))
+    model.add(Dense(1024, activation='elu'))
     model.add(BatchNormalization())
 
     model.add(Dense(64, activation='elu'))
