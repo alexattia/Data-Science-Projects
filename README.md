@@ -12,3 +12,8 @@ The goal of this challenge is to build a model that predicts the count of bike s
 
 ## Kaggle Understanding the Amazon from Space  
 Use satellite data to track the human footprint in the Amazon rainforest.  
+
+## Predicting IMDB movie rating
+Project inspired by Chuan Sun [work](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)
+How can we tell the greatness of a movie ?
+Scrapping and Machine Learning
