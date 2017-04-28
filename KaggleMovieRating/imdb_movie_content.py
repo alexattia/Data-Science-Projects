@@ -5,6 +5,19 @@ import parser
 import time
 import random
 import re
+import datetime
+
+def parse_facebook_likes_number(num_likes_string):
+    if num_likes_string[-1] == 'K':
+        thousand = 1000
+    else:
+        thousand = 1
+    return float(num_likes_string.replace('K','')) * thousand
+
+def parse_duration(time_string):
+    time_string = time_string.split('min')[0]
+    x = time.strptime(time_string,'%Hh%M')
+    return datetime.timedelta(hours=x.tm_hour,minutes=x.tm_min,seconds=x.tm_sec).total_seconds()
 
 class ImdbMovieContent():
   def __init__(self, movies):
@@ -26,7 +39,7 @@ class ImdbMovieContent():
         num_likes = sentence.split(" ")[0]
     except Exception as e:
         num_likes = None
-    return num_likes
+    return parse_facebook_likes_number(num_likes)
 
   def get_id_from_url(self, url):
     if url is None:
@@ -85,7 +98,8 @@ class ImdbMovieContent():
         movie['genres'] = None
     try:
         title_details = bs.find('div', {'id':'titleDetails'})
-        movie['language'] = [language.text for language in title_details.find_all('a', href=re.compile('language'))]
+        movie['language'] = '|'.join([language.text for language in title_details.find_all('a', href=re.compile('language'))])
+        movie['country'] = '|'.join([country.text for country in title_details.find_all('a', href=re.compile('country'))])
     except:
         movie['language'] = None
     try:
@@ -98,7 +112,7 @@ class ImdbMovieContent():
     except:
         movie['storyline'] = None
     try:
-        movie['contentRating'] = bs.find('span', {'itemprop':'contentRating'}).text
+        movie['contentRating'] = bs.find('span', {'itemprop':'contentRating'}).text.split(' ')[1]
     except:
         movie['contentRating'] = None
     try:
@@ -110,13 +124,13 @@ class ImdbMovieContent():
     except:
         movie['idmb_score'] = None
     try:
-        movie['num_voted_users'] = bs.find('span', {'itemprop':'ratingCount'}).text
+        movie['num_voted_users'] = bs.find('span', {'itemprop':'ratingCount'}).text.replace(',',)
     except:
         movie['num_voted_users'] = None
     try:
-        movie['time'] = bs.find('time', {'itemprop':'duration'}).text.replace(' ','').replace('\n', '')
+        movie['duration_sec'] = parse_duration(bs.find('time', {'itemprop':'duration'}).text.replace(' ','').replace('\n', ''))
     except:
-        movie['time'] = None
+        movie['duration_sec'] = None
     try:
         review_counts = [int(count.text.split(' ')[0].replace(',', '')) for count in bs.find_all('span', {'itemprop':'reviewCount'})]
         movie['num_user_for_reviews'] = review_counts[0]

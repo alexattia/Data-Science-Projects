@@ -4,6 +4,15 @@ import requests
 import urllib
 from imdb_movie_content import ImdbMovieContent
 from tqdm import tqdm
+import locale
+import pandas as pd
+import re
+
+def parse_price(price):
+    if not price:
+        return 0
+    price = price.replace(',', '')
+    return locale.atoi(re.sub('[^0-9,]', "", price))
 
 def get_movie_budget():
     movie_budget_url = 'http://www.the-numbers.com/movie/budgets/all'
@@ -18,14 +27,14 @@ def get_movie_budget():
         movie_name = specs[2].encode('latin1').decode('utf8', 'ignore')
         movie_budget.append({'release_date': specs[1],
                                   'movie_name': movie_name,
-                                  'production_budget': specs[3],
-                                  'domestic_gross': specs[4],
-                                  'worldwide_gross': specs[5]})
+                                  'production_budget': parse_price(specs[3]),
+                                  'domestic_gross': parse_price(specs[4]),
+                                  'worldwide_gross': parse_price(specs[5])})
     
     return movie_budget
 
-def get_imdb_urls(movie_budget):
-    for movie in tqdm(movie_budget):
+def get_imdb_urls(movie_budget, nb_elements=None):
+    for movie in tqdm(movie_budget[:nb_elements]):
         movie_name = movie['movie_name']
         title_url = urllib.parse.quote(movie_name.encode('utf-8'))
         imdb_search_link = "http://www.imdb.com/find?ref_=nv_sr_fn&q={}&s=tt".format(title_url)
@@ -54,3 +63,55 @@ def get_imdb_content(movie_budget_path, nb_elements=None):
     
     with open('movie_contents.json', 'w') as fp:
         json.dump(contents, fp)    
+
+def parse_awards(movie):
+    awards_kept = ['Oscar', 'BAFTA Film Award', 'Golden Globe', 'Palme d\'Or']
+    awards_category = ['won', 'nominated']
+    parsed_awards = {}
+    for category in awards_category:
+        for awards_type in awards_kept:
+            awards_cat = [award for award in movie['awards'][category] if award['category'] == awards_type]
+            for k, award in enumerate(awards_cat):
+                parsed_awards['{}_{}_{}'.format(awards_type, category, k+1)] = award["award"]
+    return parsed_awards
+
+def parse_actors(movie):
+    sorted_actors = sorted(movie['cast_info'], key=lambda x:x['actor_fb_likes'], reverse=True)
+    top_k = 3
+    parsed_actors = {}
+    parsed_actors['total_cast_fb_likes'] = sum([actor['actor_fb_likes'] for actor in movie['cast_info']]) + movie['director_info']['director_fb_links']
+    for k, actor in enumerate(sorted_actors[:top_k]):
+        if k < len(sorted_actors):
+            parsed_actors['actor_{}_name'.format(k+1)] = actor['actor_name']
+            parsed_actors['actor_{}_fb_likes'.format(k+1)] = actor['actor_fb_likes']
+        else:
+            parsed_actors['actor_{}_name'.format(k+1)] = None
+            parsed_actors['actor_{}_fb_likes'.format(k+1)] = None
+    return parsed_actors
+
+def create_dataframe(movies_content_path, movie_budget_path):
+    with open(movies_content_path, 'r') as fp:
+        movies = json.load(fp)
+    with open(movie_budget_path, 'r') as fp:
+        movies_budget = json.load(fp)
+    movies_list = []
+    for movie in movies:
+        content = {k:v for k,v in movie.items() if k not in ['awards', 'cast_info', 'director_info']}
+        name = movie['movie_title']
+        budget = [film for film in movies_budget if film['movie_name']==name][0]
+        budget = {k:v for k,v in budget.items() if k not in ['imdb_url', 'movie_name']}
+        content.update(budget)
+        try:
+            content.update(parse_awards(movie))
+        except:
+            pass
+        try:
+            content.update({k:v for k,v in movie['director_info'].items() if k!= 'director_link'})
+        except:
+            pass
+        try:
+            content.update(parse_actors(movie))
+        except:
+            pass
+        movies_list.append(content)
+    return pd.DataFrame(movies_list)
