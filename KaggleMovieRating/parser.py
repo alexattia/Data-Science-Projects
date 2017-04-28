@@ -7,6 +7,7 @@ from tqdm import tqdm
 import locale
 import pandas as pd
 import re
+import sys
 
 def parse_price(price):
     if not price:
@@ -54,12 +55,15 @@ def get_imdb_content(movie_budget_path, nb_elements=None):
         movies = json.load(fp)
     content_provider = ImdbMovieContent(movies)
     contents = []
-    for movie in movies[:nb_elements]:
+    for i, movie in tqdm(enumerate(movies[:nb_elements])):
         imdb_url = movie['imdb_url']
         response = requests.get(imdb_url)
         bs = BeautifulSoup(response.text, 'lxml')
         movies_content = content_provider.get_content(bs)
         contents.append(movies_content)
+        if i == 100:
+            with open('movie_contents.json', 'w') as fp:
+                json.dump(contents, fp)    
     
     with open('movie_contents.json', 'w') as fp:
         json.dump(contents, fp)    
@@ -98,9 +102,12 @@ def create_dataframe(movies_content_path, movie_budget_path):
     for movie in movies:
         content = {k:v for k,v in movie.items() if k not in ['awards', 'cast_info', 'director_info']}
         name = movie['movie_title']
-        budget = [film for film in movies_budget if film['movie_name']==name][0]
-        budget = {k:v for k,v in budget.items() if k not in ['imdb_url', 'movie_name']}
-        content.update(budget)
+        try:
+            budget = [film for film in movies_budget if film['movie_name']==name][0]
+            budget = {k:v for k,v in budget.items() if k not in ['imdb_url', 'movie_name']}
+            content.update(budget)
+        except: 
+            pass
         try:
             content.update(parse_awards(movie))
         except:
@@ -114,4 +121,17 @@ def create_dataframe(movies_content_path, movie_budget_path):
         except:
             pass
         movies_list.append(content)
-    return pd.DataFrame(movies_list)
+    df = pd.DataFrame(movies_list)
+    df = df[pd.notnull(df.idmb_score)]
+    return df
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        nb_elements = int(sys.argv[1])
+    else:
+        nb_elements = None
+    movie_budget = get_movie_budget()
+    movies = get_imdb_urls(movie_budget, nb_elements=nb_elements)
+    get_imdb_content("movie_budget.json", nb_elements=nb_elements)
+
+
