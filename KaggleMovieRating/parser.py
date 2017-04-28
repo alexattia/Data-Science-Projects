@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import json
 import requests
 import urllib
+from imdb_movie_content import ImdbMovieContent
 from tqdm import tqdm
 
 def get_movie_budget():
@@ -39,5 +40,17 @@ def get_imdb_urls(movie_budget):
     with open('movie_budget.json', 'w') as fp:
         json.dump(movie_budget, fp)
 
-
-# with open('movie_nie_budget, fp)
+def get_imdb_content(movie_budget_path, nb_elements=None):
+    with open(movie_budget_path, 'r') as fp:
+        movies = json.load(fp)
+    content_provider = ImdbMovieContent(movies)
+    contents = []
+    for movie in movies[:nb_elements]:
+        imdb_url = movie['imdb_url']
+        response = requests.get(imdb_url)
+        bs = BeautifulSoup(response.text, 'lxml')
+        movies_content = content_provider.get_content(bs)
+        contents.append(movies_content)
+    
+    with open('movie_contents.json', 'w') as fp:
+        json.dump(contents, fp)    

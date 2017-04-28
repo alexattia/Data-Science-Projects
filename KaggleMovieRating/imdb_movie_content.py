@@ -42,6 +42,32 @@ class ImdbMovieContent():
       movies_content.append(self.get_content(bs))
     return movies_content
 
+  def get_awards(self, movie_link):
+    awards_url = movie_link + 'awards'
+    response = requests.get(awards_url)
+    bs = BeautifulSoup(response.text, 'lxml')
+    awards = bs.find_all('tr')
+    award_dict = []
+    for award in awards:
+        if 'rowspan' in award.find('td').attrs:
+            rowspan = int(award.find('td')['rowspan'])
+            if rowspan == 1:
+                award_dict.append({'category' : award.find('span', class_='award_category').text, 
+                                   'type' : award.find('b').text,
+                                   'award': award.find('td', class_='award_description').text.split('\n')[1].replace('            ', '')})
+            else:
+                index = awards.index(award)
+                dictt = {'category':award.find('span', class_='award_category').text, 
+                         'type' : award.find('b').text}
+                awards_ = []
+                for elem in awards[index:index+rowspan]:
+                    award_dict.append({'category':award.find('span', class_='award_category').text, 
+                                         'type' : award.find('b').text,
+                                        'award': elem.find('td', class_='award_description').text.split('\n')[1].replace('            ', '')})
+    award_nominated = [{k:v for k,v in award.items() if k != 'type'} for award in award_dict if award['type'] == 'Nominated']
+    award_won = [{k:v for k,v in award.items() if k != 'type'} for award in award_dict if award['type'] == 'Won']
+    return award_nominated, award_won
+
   def get_content(self, bs):
     movie = {}
     try:
@@ -131,6 +157,12 @@ class ImdbMovieContent():
         movie['image_urls'] = poster_image_url.split("_V1_")[0] + "_V1_.jpg"
     except:
         movie['image_urls'] = None
+    try:
+        award_nominated, award_won = self.get_awards(movie['movie_imdb_link'])
+        movie['awards'] = {"won": award_won, 'nominated': award_nominated}
+    except Exception as e:
+        print(e)
+        movie['awards'] = None
     return movie
 
 
