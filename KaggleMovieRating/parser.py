@@ -10,12 +10,19 @@ import re
 import sys
 
 def parse_price(price):
+    """
+    Convert string price to numbers
+    """
     if not price:
         return 0
     price = price.replace(',', '')
     return locale.atoi(re.sub('[^0-9,]', "", price))
 
 def get_movie_budget():
+    """
+    Parsing the numbers website to get the budget data.
+    :return: list of dictionnaries with budget and gross
+    """
     movie_budget_url = 'http://www.the-numbers.com/movie/budgets/all'
     response = requests.get(movie_budget_url)
     bs = BeautifulSoup(response.text, 'lxml')
@@ -35,6 +42,12 @@ def get_movie_budget():
     return movie_budget
 
 def get_imdb_urls(movie_budget, nb_elements=None):
+    """
+    Parsing imdb website to get imdb movies links.
+    Dumping a json file with budget, gross and imdb urls
+    :param movie_budget: list of dictionnaries with budget and gross
+    :param nb_elements: number of movies to parse 
+    """
     for movie in tqdm(movie_budget[:nb_elements]):
         movie_name = movie['movie_name']
         title_url = urllib.parse.quote(movie_name.encode('utf-8'))
@@ -51,24 +64,33 @@ def get_imdb_urls(movie_budget, nb_elements=None):
         json.dump(movie_budget, fp)
 
 def get_imdb_content(movie_budget_path, nb_elements=None):
+    """
+    Parsing imdb website to get imdb content : awards, casting, description, etc.
+    Dumping a json file with imdb content
+    :param movie_budget_path: path of the movie_budget.json file
+    :param nb_elements: number of movies to parse 
+    """
     with open(movie_budget_path, 'r') as fp:
         movies = json.load(fp)
     content_provider = ImdbMovieContent(movies)
     contents = []
-    for i, movie in tqdm(enumerate(movies[:nb_elements])):
+    for i, movie in enumerate(movies[:nb_elements]):
+        print("\r%i / %i" % (i, len(movies[:nb_elements])), end="")
         imdb_url = movie['imdb_url']
         response = requests.get(imdb_url)
         bs = BeautifulSoup(response.text, 'lxml')
         movies_content = content_provider.get_content(bs)
         contents.append(movies_content)
-        if i == 100:
-            with open('movie_contents.json', 'w') as fp:
-                json.dump(contents, fp)    
-    
-    with open('movie_contents.json', 'w') as fp:
+    with open('movie_contents2.json', 'w') as fp:
         json.dump(contents, fp)    
 
 def parse_awards(movie):
+    """
+    Convert awards information to a dictionnary for dataframe.
+    Keeping only Oscard, BAFTA, Golden Globe and Palme d'Or awards.
+    :param movie: movie dictionnary
+    :return: well-formated dictionnary with awards information
+    """
     awards_kept = ['Oscar', 'BAFTA Film Award', 'Golden Globe', 'Palme d\'Or']
     awards_category = ['won', 'nominated']
     parsed_awards = {}
@@ -80,6 +102,12 @@ def parse_awards(movie):
     return parsed_awards
 
 def parse_actors(movie):
+    """
+    Convert casting information to a dictionnary for dataframe.
+    Keeping only 3 actors with most facebook likes.
+    :param movie: movie dictionnary
+    :return: well-formated dictionnary with casting information
+    """
     sorted_actors = sorted(movie['cast_info'], key=lambda x:x['actor_fb_likes'], reverse=True)
     top_k = 3
     parsed_actors = {}
@@ -94,6 +122,12 @@ def parse_actors(movie):
     return parsed_actors
 
 def create_dataframe(movies_content_path, movie_budget_path):
+    """
+    Create dataframe from movie_budget.json and movie_content.json files.
+    :param movies_content_path: path of the movies_content.json file
+    :param movie_budget_path: path of the movie_budget.json file
+    :return: well formated dataframe
+    """
     with open(movies_content_path, 'r') as fp:
         movies = json.load(fp)
     with open(movie_budget_path, 'r') as fp:
@@ -130,8 +164,8 @@ if __name__ == '__main__':
         nb_elements = int(sys.argv[1])
     else:
         nb_elements = None
-    movie_budget = get_movie_budget()
-    movies = get_imdb_urls(movie_budget, nb_elements=nb_elements)
+    # movie_budget = get_movie_budget()
+    # movies = get_imdb_urls(movie_budget, nb_elements=nb_elements)
     get_imdb_content("movie_budget.json", nb_elements=nb_elements)
 
 
