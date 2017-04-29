@@ -87,7 +87,7 @@ def get_imdb_content(movie_budget_path, nb_elements=None):
 def parse_awards(movie):
     """
     Convert awards information to a dictionnary for dataframe.
-    Keeping only Oscard, BAFTA, Golden Globe and Palme d'Or awards.
+    Keeping only Oscar, BAFTA, Golden Globe and Palme d'Or awards.
     :param movie: movie dictionnary
     :return: well-formated dictionnary with awards information
     """
