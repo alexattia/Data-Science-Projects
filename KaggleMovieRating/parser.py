@@ -121,6 +121,38 @@ def parse_actors(movie):
             parsed_actors['actor_{}_fb_likes'.format(k+1)] = None
     return parsed_actors
 
+def parse_production_company(movie):
+    """
+    Convert production companies to a dictionnary for dataframe.
+    Keeping only 3 production companies.
+    :param movie: movie dictionnary
+    :return: well-formated dictionnary with production companies
+    """   
+    parsed_production_co = {}
+    top_k = 3
+    production_companies = movie['production_co'][:top_k]
+    for k, company in enumerate(production_companies):
+        if k < len(movie['production_co']):
+            parsed_production_co['production_co_{}'.format(k+1)] = company
+        else:
+            parsed_production_co['production_co_{}'.format(k+1)] = None
+    return parsed_production_co
+
+def parse_genres(movie):
+    """
+    Convert genres to a dictionnary for dataframe.
+    :param movie: movie dictionnary
+    :return: well-formated dictionnary with genres
+    """   
+    parse_genres = {}
+    g = movie['genres']
+    with open('genre.json', 'r') as f:
+        genres = json.load(f)
+    for k, genre in enumerate(g):
+        if genre in genres:
+            parse_genres['genre_{}'.format(k+1)] = genres[genre]
+    return parse_genres
+
 def create_dataframe(movies_content_path, movie_budget_path):
     """
     Create dataframe from movie_budget.json and movie_content.json files.
@@ -134,7 +166,7 @@ def create_dataframe(movies_content_path, movie_budget_path):
         movies_budget = json.load(fp)
     movies_list = []
     for movie in movies:
-        content = {k:v for k,v in movie.items() if k not in ['awards', 'cast_info', 'director_info']}
+        content = {k:v for k,v in movie.items() if k not in ['awards', 'cast_info', 'director_info', 'production_co']}
         name = movie['movie_title']
         try:
             budget = [film for film in movies_budget if film['movie_name']==name][0]
@@ -147,7 +179,15 @@ def create_dataframe(movies_content_path, movie_budget_path):
         except:
             pass
         try:
+            content.update(parse_genres(movie))
+        except:
+            pass
+        try:
             content.update({k:v for k,v in movie['director_info'].items() if k!= 'director_link'})
+        except:
+            pass
+        try:
+            content.update(parse_production_company(movie))
         except:
             pass
         try:
