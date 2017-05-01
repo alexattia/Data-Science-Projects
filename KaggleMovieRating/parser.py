@@ -81,7 +81,7 @@ def get_imdb_content(movie_budget_path, nb_elements=None):
         bs = BeautifulSoup(response.text, 'lxml')
         movies_content = content_provider.get_content(bs)
         contents.append(movies_content)
-    with open('movie_contents2.json', 'w') as fp:
+    with open('movie_contents3.json', 'w') as fp:
         json.dump(contents, fp)    
 
 def parse_awards(movie):
@@ -157,6 +157,7 @@ def create_dataframe(movies_content_path, movie_budget_path):
         movies_list.append(content)
     df = pd.DataFrame(movies_list)
     df = df[pd.notnull(df.idmb_score)]
+    df.idmb_score = df.idmb_score.apply(float)
     return df
 
 if __name__ == '__main__':
