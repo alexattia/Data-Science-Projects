@@ -91,10 +91,10 @@ class ImdbMovieContent():
         movie['title_year'] = title_year[1]
     except:
         movie['title_year'] = None
-    try:
-        movie['genres'] = '|'.join([genre.text.replace(' ','') for genre in bs.find('div', {'itemprop': 'genre'}).find_all('a')])
-    except:
-        movie['genres'] = None
+    # try:
+    #     movie['genres'] = '|'.join([genre.text.replace(' ','') for genre in bs.find('div', {'itemprop': 'genre'}).find_all('a')])
+    # except:
+    #     movie['genres'] = None
     try:
         title_details = bs.find('div', {'id':'titleDetails'})
         movie['language'] = '|'.join([language.text for language in title_details.find_all('a', href=re.compile('language'))])

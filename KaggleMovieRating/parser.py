@@ -178,10 +178,10 @@ def create_dataframe(movies_content_path, movie_budget_path):
             content.update(parse_awards(movie))
         except:
             pass
-        try:
-            content.update(parse_genres(movie))
-        except:
-            pass
+        # try:
+        #     content.update(parse_genres(movie))
+        # except:
+        #     pass
         try:
             content.update({k:v for k,v in movie['director_info'].items() if k!= 'director_link'})
         except:
