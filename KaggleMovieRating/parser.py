@@ -2,12 +2,15 @@ from bs4 import BeautifulSoup
 import json
 import requests
 import urllib
-from imdb_movie_content import ImdbMovieContent
 from tqdm import tqdm
 import locale
 import pandas as pd
 import re
+import time
+import random
 import sys
+
+from imdb_movie_content import ImdbMovieContent
 
 def parse_price(price):
     """
@@ -48,7 +51,7 @@ def get_imdb_urls(movie_budget, nb_elements=None):
     :param movie_budget: list of dictionnaries with budget and gross
     :param nb_elements: number of movies to parse 
     """
-    for movie in tqdm(movie_budget[:nb_elements]):
+    for movie in tqdm(movie_budget[1000:1000+nb_elements]):
         movie_name = movie['movie_name']
         title_url = urllib.parse.quote(movie_name.encode('utf-8'))
         imdb_search_link = "http://www.imdb.com/find?ref_=nv_sr_fn&q={}&s=tt".format(title_url)
@@ -74,14 +77,20 @@ def get_imdb_content(movie_budget_path, nb_elements=None):
         movies = json.load(fp)
     content_provider = ImdbMovieContent(movies)
     contents = []
-    for i, movie in enumerate(movies[:nb_elements]):
-        print("\r%i / %i" % (i, len(movies[:nb_elements])), end="")
-        imdb_url = movie['imdb_url']
-        response = requests.get(imdb_url)
-        bs = BeautifulSoup(response.text, 'lxml')
-        movies_content = content_provider.get_content(bs)
-        contents.append(movies_content)
-    with open('movie_contents3.json', 'w') as fp:
+    threshold = 1300
+    for i, movie in enumerate(movies[threshold:threshold+nb_elements]):
+        time.sleep(random.uniform(0, 0.25))
+        print("\r%i / %i" % (i, len(movies[threshold:threshold+nb_elements])), end="")
+        try:
+            imdb_url = movie['imdb_url']
+            response = requests.get(imdb_url)
+            bs = BeautifulSoup(response.text, 'lxml')
+            movies_content = content_provider.get_content(bs)
+            contents.append(movies_content)
+        except Exception as e:
+            print(e)
+            pass
+    with open('movie_contents7.json', 'w') as fp:
         json.dump(contents, fp)    
 
 def parse_awards(movie):
@@ -178,10 +187,10 @@ def create_dataframe(movies_content_path, movie_budget_path):
             content.update(parse_awards(movie))
         except:
             pass
-        # try:
-        #     content.update(parse_genres(movie))
-        # except:
-        #     pass
+        try:
+            content.update(parse_genres(movie))
+        except:
+            pass
         try:
             content.update({k:v for k,v in movie['director_info'].items() if k!= 'director_link'})
         except:
