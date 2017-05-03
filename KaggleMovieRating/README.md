@@ -21,8 +21,12 @@ As we can see in the pictures above, the imdb score is correlated to the number 
 Obviously, domestic and worlwide gross are highly correlated. However, the more important the production budget, the more important the gross.  
 As it is shown in the notebook, the budget is not really correlated to the number of awards.  
 What's funny is that the popularity of the third most famous actor is more important for the IMDB score than the popularity of the most famous score (Correlation 0.2 vs 0.08).  
+(Many other charts in the Jupyter notebook)
 
 ## Third Part - Predict the IMDB score
 
-Machine Learning to predict the IMDB score with the meaningful variables
+Machine Learning to predict the IMDB score with the meaningful variables.  
+Using a Random Forest algorithm (500 estimators). 
+![Most important features](https://github.com/alexattia/Data-Science-Projects/blob/master/pics/features.png)
 
+Full disclosure : only 1200 rows and low accuracy currently
