@@ -24,6 +24,19 @@ def get_score_details(game, team):
         game['result'] = 'LOST'
     return game
 
+def shot_team(row, columns):
+    try:
+        for col in columns:
+            if row['team_a'] == 'PSG':
+                row['{}_PSG'.format(col.lower().replace(' ','_'))] = row[col]['team_a'] 
+                row['{}_adv'.format(col.lower().replace(' ','_'))] = row[col]['team_b'] 
+            else:
+                row['{}_PSG'.format(col.lower().replace(' ','_'))] = row[col]['team_b'] 
+                row['{}_adv'.format(col.lower().replace(' ','_'))] = row[col]['team_a']
+    except:
+        pass
+    return row
+
 def get_goals_team(bs, team):
     if bs.find('span', class_='bidi').text != ' 0 - 0':
         goals = [{'player':elem.find('a').text, 
@@ -61,11 +74,12 @@ def get_goals(link):
     bs = BeautifulSoup(response.text, 'lxml')
     try:
         game['goals_a'], game['goals_b'] = [get_goals_team(bs, 'a'), get_goals_team(bs, 'b')]
+    except: pass
+    try:
         game.update(get_lineups(bs))
+    except: pass
+    try:
         game.update(get_stats(bs))
-    except Exception as e:
-        print(e)
-        print(link)
-        pass 
+    except: pass 
     return game
 

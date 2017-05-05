@@ -29,4 +29,3 @@ Machine Learning to predict the IMDB score with the meaningful variables.
 Using a Random Forest algorithm (500 estimators). 
 ![Most important features](https://github.com/alexattia/Data-Science-Projects/blob/master/pics/features.png)
 
-Full disclosure : only 1200 rows and low accuracy currently
