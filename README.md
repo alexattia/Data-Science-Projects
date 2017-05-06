@@ -18,3 +18,8 @@ Deep Learning model (using Keras) to label satellite images.
 Project inspired by Chuan Sun [work](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)  
 How can we tell the greatness of a movie ?  
 Scrapping and Machine Learning  
+
+## [Playing with Soccer data](https://github.com/alexattia/Data-Science-Projects/tree/master/KaggleSoccer)
+
+A a soccer fan and a data passionate, I wanted to play with soccer data.  
+I don't know currently what's the aim of this project but I will parse data from diverse websites, for differents teams and differents players.
