@@ -10,18 +10,24 @@ from bs4 import BeautifulSoup
 def get_score_details(game, team):
     if game["team_a"] == team['name']:
         game['place'] = 'home'
-        game['nb_goals_{}'.format(team['name'])] = int(game['score'].split('-')[0])
-        game['nb_goals_adv'] = int(game['score'].split('-')[1])
+        try:
+            game['nb_goals_{}'.format(team['name'])] = int(game['score'].split('-')[0])
+            game['nb_goals_adv'] = int(game['score'].split('-')[1])
+        except:pass
     else:
         game['place'] = 'away'
-        game['nb_goals_{}'.format(team['name'])] = int(game['score'].split('-')[1])
-        game['nb_goals_adv'] = int(game['score'].split('-')[0])
-    if game['nb_goals_{}'.format(team['name'])] > game['nb_goals_adv']:
-        game['result'] = 'WIN'
-    elif game['nb_goals_{}'.format(team['name'])] == game['nb_goals_adv']:
-        game['result'] = 'TIE'
-    else:
-        game['result'] = 'LOST'
+        try:
+            game['nb_goals_{}'.format(team['name'])] = int(game['score'].split('-')[1])
+            game['nb_goals_adv'] = int(game['score'].split('-')[0])
+        except:pass
+    try:
+        if game['nb_goals_{}'.format(team['name'])] > game['nb_goals_adv']:
+            game['result'] = 'WIN'
+        elif game['nb_goals_{}'.format(team['name'])] == game['nb_goals_adv']:
+            game['result'] = 'TIE'
+        else:
+            game['result'] = 'LOST'
+    except:pass
     return game
 
 def shot_team(row, columns):
