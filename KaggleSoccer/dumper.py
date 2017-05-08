@@ -38,11 +38,13 @@ def get_team(request, link=None):
             print('Please check team link:', link)
             team['id_'] = results.find_all('a')[0]["href"].split('/')[4]
             team['name'] = results.find_all('a')[0].text
+            team['country'] = results.find_all('a')[0]["href"].split('/')[2]
         except:
             print('No team found !')
     else:
         team['id_'] = link.split('/')[6]
         team['name'] = link.split('/')[5]
+        team['country'] = link.split('/')[4]
     return team
 
 def get_games(team, nb_pages=12):
@@ -85,14 +87,13 @@ def get_games(team, nb_pages=12):
 
 def get_squad(team, season_path='./seasons_codes.json'):
     with open(season_path, 'r') as f:
-        seasons = json.load(f)
+        seasons = json.load(f)[team["country"]]
     
     team['squad'] = {}
     for k,v in seasons.items():
         link_base = 'http://us.soccerway.com/a/block_team_squad?block_id=page_team_1_block_team_squad_3&callback_params='
         link_ = urllib.parse.quote('{"team_id":%s}' % team['id_']) + '&action=changeSquadSeason&params=' + urllib.parse.quote('{"season_id":%s}' % v)
         link = link_base + link_
-        
         response = requests.get(link)
         test = json.loads(response.text)['commands'][0]['parameters']['content']
         bs = BeautifulSoup(test, 'lxml')
@@ -112,7 +113,7 @@ def get_squad(team, season_path='./seasons_codes.json'):
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        request = sys.argv[1]
+        request = ' '.join(sys.argv[1:])
     else:
         raise ValueError('You must enter a requested team!')
     team = get_team(request)
@@ -121,10 +122,9 @@ if __name__ == '__main__':
     while f not in ['Y', 'y','yes','']:
         if count < 3:
             request = input('Enter a new request : ')
-            link=None
+            link = None
         else:
             link = input('Paste team link : ')
-            continue
         team = get_team(request, link)
         f = input('Satisfied ? (Y/n)')
         count += 1
