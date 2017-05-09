@@ -83,7 +83,7 @@ def get_games(team, nb_pages=12):
                 games.append(game)
         games = sorted(games, key=lambda x:datetime.strptime(x['date'], '%d/%m/%y'))
         team['games'] = games
-        return team
+    return team
 
 def get_squad(team, season_path='./seasons_codes.json'):
     with open(season_path, 'r') as f:
