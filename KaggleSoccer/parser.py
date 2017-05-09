@@ -8,6 +8,7 @@ import json
 from tqdm import tqdm
 import random
 from bs4 import BeautifulSoup
+from collections import Counter
 
 def get_score_details(game, team):
     if game["team_a"] == team['name']:
@@ -41,8 +42,7 @@ def shot_team(row, columns, team_name):
             else:
                 row['{}_{}'.format(col.lower().replace(' ','_'), team_name.lower())] = row[col]['team_b'] 
                 row['{}_adv'.format(col.lower().replace(' ','_'))] = row[col]['team_a']
-    except:
-        pass
+    except: pass
     return row
 
 def convert_team_name(row, team_name):
@@ -55,8 +55,7 @@ def convert_team_name(row, team_name):
                 row['{}_{}'.format(col, team_name.lower())] = row['{}_b'.format(col)] 
                 row['{}_adv'.format(col)] = row['{}_a'.format(col)]  
             del row['{}_a'.format(col)], row['{}_b'.format(col)] 
-        except:
-            pass
+        except: pass
     return row    
 
 def player_per_opponent(df, player, team_name):
@@ -79,10 +78,22 @@ def player_per_opponent(df, player, team_name):
                                          'assists':assist,
                                          'decisive':de,
                                          'games':game_played}
-        except Exception as e:
-            print(e)
-            pass
+        except: pass
     return stats_player
+
+def ratio_one_opponent(df, opponent, team_name, top_k=10):
+    df_oppo = df[df.opponent == opponent]
+    game_player = dict(Counter(np.concatenate(list(df_oppo["players_team_%s" % team_name.lower()]) +
+                                          list(df_oppo["subs_in_%s" % team_name.lower()]))).items())
+    goal_counter = Counter([elem['player'] for elem in np.concatenate(list(df_oppo["goals_%s" % team_name.lower()]))])
+    assist_counter = Counter([elem['assist'] for elem in np.concatenate(list(df_oppo["goals_%s" % team_name.lower()])) if "assist" in elem])
+    goal_ratio = sorted([(k, v/game_player[k]) for k,v in dict(goal_counter).items() if k in game_player and game_player[k] >= 3 ], 
+                        key=lambda x:x[1], reverse=True)[:top_k]
+    assist_ratio = sorted([(k, v/game_player[k]) for k,v in dict(assist_counter).items() if k in game_player and game_player[k] >= 3 ], 
+                          key=lambda x:x[1], reverse=True)[:top_k]
+    decisive_ratio = sorted([(k, v/game_player[k]) for k,v in dict(goal_counter+assist_counter).items() if k in game_player and game_player[k] >= 3 ], 
+                            key=lambda x:x[1], reverse=True)[:top_k]
+    return goal_ratio, assist_ratio, decisive_ratio
 
 def get_goals_team(bs, team):
     if bs.find('span', class_='bidi').text != ' 0 - 0':

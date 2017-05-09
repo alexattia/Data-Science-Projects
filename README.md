@@ -21,5 +21,5 @@ Scrapping and Machine Learning
 
 ## [Playing with Soccer data](https://github.com/alexattia/Data-Science-Projects/tree/master/KaggleSoccer)
 
-A a soccer fan and a data passionate, I wanted to play with soccer data.  
-I don't know currently what's the aim of this project but I will parse data from diverse websites, for differents teams and differents players.
+As a soccer fan and a data passionate, I wanted to play and analyze with soccer data.  
+I don't know currently what's the aim of this project but I will parse data from diverse websites, for differents teams and differents players. 
