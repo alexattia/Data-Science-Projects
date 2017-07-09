@@ -27,16 +27,20 @@ def get_all_tweets(query):
     driver.get("https://twitter.com/search?f=tweets&vertical=default&q={}".format(urllib.parse.quote(query)))
 
     length = []
-    while True:
-        time.sleep(np.random.randint(50,100)*0.01)
-        tweets_found = driver.find_elements_by_class_name('tweet') 
-        driver.execute_script("return arguments[0].scrollIntoView();", tweets_found[::-1][0])
-        
-        # Stop the loop while no more found tweets 
-        length.append(len(tweets_found))
-        if len(tweets_found) > 200 and (len(length) - len(set(length))) > 2:
-            print('%s tweets found at %s' % (len(tweets_found), datetime.datetime.now().strftime('%d/%m/%Y - %H:%M')))
-            break
+    try:
+        while True:
+            time.sleep(np.random.randint(50,100)*0.01)
+            tweets_found = driver.find_elements_by_class_name('tweet') 
+            driver.execute_script("return arguments[0].scrollIntoView();", tweets_found[::-1][0])
+            
+            # Stop the loop while no more found tweets 
+            length.append(len(tweets_found))
+            if len(tweets_found) > 200 and (len(length) - len(set(length))) > 2:
+                print('%s tweets found at %s' % (len(tweets_found), datetime.datetime.now().strftime('%d/%m/%Y - %H:%M')))
+                break
+    except:
+        driver.save_screenshot('screenshot_%s.png' % datetime.datetime.now().strftime('%d_%m_%Y_%H/%M'))
+        raise
 
     tweets = []
     for tweet in tweets_found:
@@ -69,7 +73,6 @@ def filter_tweets(tweets):
     most_recent_file = sorted([datetime.datetime.fromtimestamp(os.path.getmtime(path)) 
                                for path in glob.glob("./downloaded_pics/*.jpg")], reverse=True)[0]
     recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > most_recent_file]
-    recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > datetime.datetime(2017, 7, 6, 16, 42, 56)]
     return recent_seach_tweets
 
 def download_pictures(recent_seach_tweets):
@@ -122,7 +125,6 @@ if __name__ == '__main__':
         download_pictures(recent_seach_tweets)
         send_email(recent_seach_tweets)
     else:
-        print('No picture to download')
-    print('\n')
+        print('%s - No picture to download' % datetime.datetime.now().strftime('%d/%m/%Y - %H:%M'))
 
 
