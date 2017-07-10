@@ -23,3 +23,8 @@ Scrapping and Machine Learning
 
 As a soccer fan and a data passionate, I wanted to play and analyze with soccer data.  
 I don't know currently what's the aim of this project but I will parse data from diverse websites, for differents teams and differents players. 
+
+## [Twitter Parsing](https://github.com/alexattia/Data-Science-Projects/tree/master/TwitterParsing)
+
+I've recently discovered the Chris Albon Machine Learning flash cards and I want to download those flash cards but the official Twitter API has a limit rate of 2 weeks old tweets so I had to find a way to bypass this limitation : use Selenium and PhantomJS.  
+Purpose of this project : Check every 2 hours, if he posted new flash cards. In this case, download them and send me a summary email.

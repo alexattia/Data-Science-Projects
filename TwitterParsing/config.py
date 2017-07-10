@@ -50,6 +50,10 @@ class Config:
                  -webkit-font-smoothing: antialiased;
                  -webkit-text-size-adjust: none;
                  }
+                 .made_tweet_link{
+                 text-decoration: none;
+                 color:#383838;
+                 }
                  table {
                  border-collapse: collapse;
                  border-spacing: 0;
@@ -287,7 +291,7 @@ class Config:
                                              <tr>
                                                 <td>
                                                    <h2 style="color: #404040; font-weight: 300; margin: 0 0 12px 0; font-size: 24px; line-height: 30px; font-family: 'Benton Sans', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica neue', Helvetica, Tahoma, Arial, sans-serif; " class="">
-                                                      {tweet_text}
+                                                      <a href={tweet_link} class="made_tweet_link">{tweet_text}</a>
                                                    </h2>
                                                    <table cellspacing="0" cellpadding="0" width='100%' style='' align='' class="">
                                                       <tr style='' class=''>

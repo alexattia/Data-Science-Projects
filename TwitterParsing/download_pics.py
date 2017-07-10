@@ -94,6 +94,7 @@ def format_tweets(driver):
         tweet_dict['username'] = bs.find('span', class_='username').text
         timestamp = float(bs.find('span', class_='_timestamp')['data-time'])
         tweet_dict['date'] = datetime.datetime.fromtimestamp(timestamp)
+        tweet_dict['tweet_link'] = 'https://twitter.com' + bs.find('a', class_='js-permalink')['href']
         tweet_dict['text'] = bs.find('p', class_='tweet-text').text
         try:
             tweet_dict['images'] = [k['src'] for k in bs.find('div', class_="AdaptiveMedia-container").find_all('img')]
@@ -124,7 +125,7 @@ def filter_tweets(tweets):
     recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > most_recent_file]
 
     # Uncomment for testing new tweets
-    # recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > datetime.datetime(2017, 7, 6, 13, 41, 48)]
+    recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > datetime.datetime(2017, 7, 6, 13, 41, 48)]
     return recent_seach_tweets
 
 def download_pictures(recent_seach_tweets):
@@ -133,7 +134,7 @@ def download_pictures(recent_seach_tweets):
     :param recent_seach_tweets: list of dictionnaries
     """
     # Downloading pictures
-    print('Downloading %d tweets' % len(recent_seach_tweets))
+    print('%s - Downloading %d tweets' % (datetime.datetime.now().strftime('%d/%m/%Y - %H:%M'), len(recent_seach_tweets)))
     for tw in recent_seach_tweets:
         img_url = tw['images'][0]
         filename = tw['text'][:tw['text'].index("#")-1].lower().replace(' ','_')
@@ -150,9 +151,13 @@ def send_email(recent_seach_tweets):
     # Add a special text for the first 3 new tweets 
     for tw in recent_seach_tweets[:3]:
         date = tw['date'].strftime('Le %d/%m/%Y à %H:%M')
+        link_tweet = tw['tweet_link']
         link_picture = tw['images'][0]
         tweet_text = tw["text"][:tw["text"].index('#')-1]
-        msg += C.flashcard.format(date=date, link_picture=link_picture, tweet_text=tweet_text)
+        msg += C.flashcard.format(date=date, 
+                                  link_picture=link_picture, 
+                                  tweet_text=tweet_text,
+                                  tweet_link=link_tweet)
 
     # mapping for the subject
     numbers = { 0 : 'zero', 1 : 'one', 2 : 'two', 3 : 'three', 4 : 'four', 5 : 'five',
@@ -169,7 +174,7 @@ def send_email(recent_seach_tweets):
     server.login(C.my_email_address, C.password)
     server.sendmail(C.my_email_address, C.dest, msg_full)
     server.quit()
-    print('E-mail sent!')
+    print('%s - E-mail sent!' % datetime.datetime.now().strftime('%d/%m/%Y - %H:%M'))
 
 if __name__ == '__main__':
     # config file with mail content, email addresses
