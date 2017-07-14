@@ -2,12 +2,11 @@
 
 Modern face recognition with deep learning and HOG algorithm.  
 
-1. Find faces in image   
-2. Affine Transformations
-3. Encoding Faces
-4. Make a prediction
-
-Using the pipeline described [in this post from Adam Geitgey](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78). 
+1. Find faces in image (HOG Algorithm)   
+2. Affine Transformations (Face alignment using an ensemble of regression
+trees)   
+3. Encoding Faces (FaceNet)  
+4. Make a prediction (Linear SVM)  
 
 We are using the [Histogram of Oriented Gradients](http://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf) (HOG) method. Instead of computing gradients for every pixel of the image (way too much detail). We compute the weighted vote orientation  gradients of 16x16 pixels squares. Afterward, we have a simple representation (HOG image) that captures the basic structure of a face.  
 All we have to do is find the part of our image that looks the most similar to a known trained HOG pattern.  
@@ -34,5 +33,11 @@ The training process works by looking at 3 face images at a time:
 - Load a picture of a  different person and generate for the two pictures the 128 measurements  
 Then we tweak the neural network slightly so that it makes sure the measurements for the same person are slightly closer while making sure the measurements for the two different persons are slightly further apart.
 Once the network has been trained, it can generate measurements for any face, even ones it has never seen before!
+```
+face_encoder = dlib.face_recognition_model_v1(face_recognition_model)
+face_encoding = np.array(face_encoder.compute_face_descriptor(image, pose_landmarks, 1))
+```
 
 Finally, we need a classifier (Linear SVM or other classifier) to find the person in our database of known people who has the closest measurements to our test image. We train the classifier with the measurements as input.
+
+Thanks to Adam Geitgey who wrote a great [post](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78) about this, I followed his pipeline.
