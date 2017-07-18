@@ -6,10 +6,18 @@ import glob
 import os
 
 def get_available_gpus():
+    """
+    Return the number of GPUs availableipytho
+    """
     local_device_protos = device_lib.list_local_devices()
     return [x.name for x in local_device_protos if x.device_type == 'GPU']
 
 def define_options(config_path):
+    """
+    Define the network configuration. Load the model and the weights.
+    Threshold hard coded.
+    :return: option for tfnet object
+    """
     options = {}
     if len(get_available_gpus()) > 0 :
         options["gpu"] = 1
@@ -39,7 +47,6 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.1, max_boxes=30):
     :param probs: list of probabilities relatives to the boxes
     """
 
-    # code used from here: http://www.pyimagesearch.com/2015/02/16/faster-non-maximum-suppression-python/
     # if there are no boxes, return an empty list
     if len(boxes) == 0:
         return []
@@ -104,20 +111,37 @@ def non_max_suppression_fast(boxes, probs, overlap_thresh=0.1, max_boxes=30):
     return boxes, probs
 
 def predict_one(image, tfnet):
+    """
+    Object detection in a picture
+    :param image: image numpy array
+    :param tfnet: net object
+    :return: picture with object bounding boxes, predictions, confidence scores
+    """
     font = cv2.FONT_HERSHEY_SIMPLEX
+    # prediction
     result = tfnet.return_predict(image)
+    # Separate each label to do non max suppresion
     for label in set([k['label'] for k in result]):
         boxes = np.array([[k['topleft']['x'], k['topleft']['y'], k['bottomright']['x'], k['bottomright']['y']] for k in result
                           if k['label'] == label])
         probs = np.array([k['confidence'] for k in result if k['label'] == label])
+        # eliminating redundant object
         b, p = non_max_suppression_fast(boxes, probs)
         for k in b:
+            # remove big object
             if np.abs(np.mean(np.array((k[0],k[1]))-np.array((k[2], k[3])))) < np.min(image.shape[:2])/5:
                 cv2.rectangle(image, (k[0],k[1]), (k[2], k[3]), (255,0,0), 2)
                 cv2.putText(image, label, (k[0],k[1]), font, 0.3, (255, 0, 0))
-    return [image, b, p]
+    return image, b, p
 
 def predict(folder, nb_items=None, config_path='../darkflow/'):
+    """
+    Multiple predictions
+    :param folder: folder with pictures
+    :param nb_items: number of pictures to predict
+    :config_path: weights and model files path
+    :return: list of icture with object bounding boxes, predictions, confidence scores
+    """
     images = [cv2.imread(f) for f in glob.glob(folder+'*')][:nb_items]
     results = []
     tfnet = TFNet(define_options(config_path))
@@ -125,4 +149,3 @@ def predict(folder, nb_items=None, config_path='../darkflow/'):
         results.append(predict_one(image, tfnet))
     return results
 
-    
