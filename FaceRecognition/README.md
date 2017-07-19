@@ -41,3 +41,5 @@ face_encoding = np.array(face_encoder.compute_face_descriptor(image, pose_landma
 Finally, we need a classifier (Linear SVM or other classifier) to find the person in our database of known people who has the closest measurements to our test image. We train the classifier with the measurements as input.
 
 Thanks to Adam Geitgey who wrote a great [post](https://medium.com/@ageitgey/machine-learning-is-fun-part-4-modern-face-recognition-with-deep-learning-c3cffc121d78) about this, I followed his pipeline.
+
+![Result](https://github.com/alexattia/Data-Science-Projects/blob/master/FaceRecognition/result.png)
