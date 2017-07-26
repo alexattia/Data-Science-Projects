@@ -21,3 +21,6 @@ I also added features from the data available : Haversine distance, Manhattan di
 ### Forth part - Prediction
 I compared Random Forest and XGBoost.  
 Current Root Mean Squared Logarithmic error : 0.391
+
+Feature importance for RF & XGBoost
+![Feature importance](https://github.com/alexattia/Data-Science-Projects/blob/master/KaggleTaxiTrip/pic/feat_importance.png)
