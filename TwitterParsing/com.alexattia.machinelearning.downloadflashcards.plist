@@ -12,14 +12,14 @@
     <string>/Users/alexandreattia/Desktop/Work/Practice/HackerRankChallenge/TwitterParsing/output.txt</string>
     <key>StandardErrorPath</key>
     <string>/Users/alexandreattia/Desktop/Work/Practice/HackerRankChallenge/TwitterParsing/errors.txt</string>
-    <key>StartInterval</key>
-    <integer>5400</integer>
-<!--     <key>StartCalendarInterval</key>
+<!--     <key>StartInterval</key>
+    <integer>5400</integer> -->
+    <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
-        <integer>10</integer>
+        <integer>16</integer>
         <key>Minute</key>
         <integer>0</integer>
-    </dict> -->
+    </dict>
 </dict>
 </plist>

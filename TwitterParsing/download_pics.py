@@ -125,7 +125,7 @@ def filter_tweets(tweets):
     recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > most_recent_file]
 
     # Uncomment for testing new tweets
-    recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > datetime.datetime(2017, 7, 6, 13, 41, 48)]
+    # recent_seach_tweets = [tw for tw in unique_search_tweets if tw['date'] > datetime.datetime(2017, 7, 6, 13, 41, 48)]
     return recent_seach_tweets
 
 def download_pictures(recent_seach_tweets):
