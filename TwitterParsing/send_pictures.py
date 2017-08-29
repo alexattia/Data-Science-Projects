@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import cv2
 import glob
 import numpy as np
 from email.mime.text import MIMEText
@@ -9,13 +7,16 @@ from email.header import Header
 from email.utils import formataddr
 import smtplib
 import config_downl
+from download_pics import internet_on
+import datetime
+import sys
 
 def get_picture():
-	pic_folder = '/Users/alexandreattia/Desktop/Work/machine_learning_flashcards_v1.4/png_web/'
-	pics = glob.glob(pic_folder + '*')
-	pic = np.random.choice(pics)
-	flashcard_title = pic.split('/')[7].replace('_web.png', '').replace('_', ' ')
-	return pic, flashcard_title
+    pic_folder = '/Users/alexandreattia/Desktop/Work/machine_learning_flashcards_v1.4/png_web/'
+    pics = glob.glob(pic_folder + '*')
+    pic = np.random.choice(pics)
+    flashcard_title = pic.split('/')[7].replace('_web.png', '').replace('_', ' ')
+    return pic, flashcard_title
 
 def send_email(flashcard_title, pic):
     """
@@ -64,5 +65,5 @@ if __name__ == '__main__':
         if time_slept > 15 : 
             print('%s - No network connection' % datetime.datetime.now().strftime('%d/%m/%Y - %H:%M'))
             sys.exit()
-   p, fc = get_picture()
-   send_email(fc, p)
+    p, fc = get_picture()
+    send_email(fc, p)

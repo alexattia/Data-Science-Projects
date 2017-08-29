@@ -9,4 +9,4 @@ cd $APPDIR
 source /Users/alexandreattia/Desktop/Work/workenv/bin/activate
 
 # launch python script
-./download_pics.py
+./send_pictures.py
