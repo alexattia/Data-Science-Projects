@@ -36,3 +36,5 @@ Deep Learning model (using Keras) to label satellite images.
 Project inspired by Chuan Sun [work](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)  
 How can we tell the greatness of a movie ?  
 Scrapping and Machine Learning  
+
+## [Bitcoin price prediction](https://github.com/connectaditya/Data-Science-Projects/tree/master/Bitcoin%20price%20prediction)
