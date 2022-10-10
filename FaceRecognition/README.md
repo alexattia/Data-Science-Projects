@@ -1,6 +1,6 @@
 ## Face Recognition
 
-Modern face recognition with deep learning and HOG algorithm.  
+This project undertakes- Modern face recognition with deep learning and HOG algorithm.  
 
 1. Find faces in image (HOG Algorithm)   
 2. Affine Transformations (Face alignment using an ensemble of regression

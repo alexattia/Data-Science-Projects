@@ -1,5 +1,5 @@
 # Online-Challenge
-Challenge submitted on HackerRank and Kaggle.
+ This is an online Challenge submitted on HackerRank and Kaggle.
 
 Algorithm challenges are made on HackerRank using Python.
 
