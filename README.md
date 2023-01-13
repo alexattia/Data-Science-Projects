@@ -33,6 +33,7 @@ Use satellite data to track the human footprint in the Amazon rainforest.
 Deep Learning model (using Keras) to label satellite images.
 
 ## [Movie Recommendation System using Feature Extraction](https://github.com/dvamsidhar2002/Movie-Recommendation-System-using-Feature-Extraction)
+This is a Recommendation System which uses Tfidfvectorizer() to extract features from the data and the user input and according to the similaity score it recommends movies.
 
 ## [Predicting IMDB movie rating](https://github.com/alexattia/Data-Science-Projects/tree/master/KaggleMovieRating)
 Project inspired by Chuan Sun [work](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)  
