@@ -32,6 +32,8 @@ Kaggle playground to predict the total ride duration of taxi trips in New York C
 Use satellite data to track the human footprint in the Amazon rainforest.  
 Deep Learning model (using Keras) to label satellite images.
 
+## [Movie Recommendation System using Feature Extraction](https://github.com/dvamsidhar2002/Movie-Recommendation-System-using-Feature-Extraction)
+
 ## [Predicting IMDB movie rating](https://github.com/alexattia/Data-Science-Projects/tree/master/KaggleMovieRating)
 Project inspired by Chuan Sun [work](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)  
 How can we tell the greatness of a movie ?  
